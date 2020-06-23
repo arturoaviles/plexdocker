@@ -1,0 +1,63 @@
+version: "2"
+
+services:
+
+  samba:
+    image: dperson/samba:amd64
+    restart: always
+    command: '-u "user;pass" -s "media;/media;yes;no" -s "downloads;/downloads;yes;no"'
+    stdin_open: true
+    tty: true
+    ports:
+      - 139:139
+      - 445:445
+    volumes:
+      - /usr/share/zoneinfo/America/Argentina/Buenos_Aires:/etc/localtime
+      - ${MEDIA}:/media
+      - ${STORAGE}/torrents:/downloads
+
+  plex:
+    image: jaymoulin/plex:1.19.4.2935-amd64
+    expose:
+      - 32400
+      - 33400
+    hostname: ${PLEX_HOSTNAME} 
+    volumes:
+      - ${STORAGE}/Plex Media Server:/root/Library/Application Support/Plex Media Server
+      - /usr/share/zoneinfo/America/Argentina/Buenos_Aires:/etc/localtime
+      - ${MEDIA}:/media
+      - ${STORAGE}/tmp:/tmp
+    restart: unless-stopped
+    network_mode: "host" 
+
+  transmission:
+    image : jaymoulin/transmission:3.00-amd64
+    command: transmission-daemon -f -g /config
+    volumes:
+      - ./transmission:/config
+      - ${STORAGE}/torrents:/downloads
+      - /usr/share/zoneinfo/America/Argentina/Buenos_Aires:/etc/localtime
+    ports:
+      - 9091:9091
+      - 51413:51413
+      - 51413:51413/udp
+    expose:
+      - 9091
+    restart: unless-stopped
+
+  flexget:
+    build: flexget-amd64
+    volumes:
+      - ./flexget:/config
+      - /usr/share/zoneinfo/America/Argentina/Buenos_Aires:/etc/localtime
+      - ${STORAGE}/torrents:/downloads
+      - ${MEDIA}:/storage
+    ports:
+      - 5050:5050
+    environment:
+      - TORRENT_PLUGIN=transmission
+      - FG_WEBUI_PASSWD=123456
+    restart: unless-stopped
+    links:
+      - transmission
+
