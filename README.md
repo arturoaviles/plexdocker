@@ -5,7 +5,7 @@ It's necessary to install [Docker](https://docs.docker.com/engine/install/) and 
 
 ## How to start:
 
-Edit `.env` and put your locations for Transmission (torrents) and Flexget (movies and series). Edit variables of `docker-compose.yaml` at your taste.
+Edit `.env` and put your locations for Transmission (torrents), Flexget (movies and series), user-pass for Opensubtitles and hostname for Plex.
 And then run:
 
 ```
@@ -14,4 +14,4 @@ docker-compose up -d
 
 ## Credits:
 
-From the repository of Pablo Fredriskon (pablokbs/plex-rpi). I changed the architecture for AMD64 and i added Subliminal for subtitles.
+From the repository of Pablo Fredrikson (pablokbs/plex-rpi). I changed the architecture to AMD64 and i added Subliminal for subtitles.
